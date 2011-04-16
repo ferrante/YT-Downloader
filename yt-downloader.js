@@ -17,10 +17,23 @@
                 var videoTitle = /name="title" content="(.*?)">/.exec(body)[1].replace(/\s+/g, "_");
                 var videoURL = decodeURIComponent(result[2]);
                 
-                request({uri : videoURL, headers: { 'set-cookie': response.headers['set-cookie'] }, 'content-type': 'video/mp4',
+                request({uri : videoURL, headers: { 'set-cookie': response.headers['set-cookie'] },
                 'encoding': 'binary' }, function(error, response, body) {
                     if (!error && response.statusCode == 200) {
-                        fs.writeFile(videoTitle+".mp4", body, "binary", function(err) {
+                        var ext;
+                        
+                        switch (response.headers['content-type']) {
+                            case: 'movie/mp4':
+                                ext = "mp4";
+                                break;
+                            case: 'movie/3gpp':
+                                ext = '3gp';
+                                break;
+                            default:
+                                ext = 'flv';
+                        }
+                        
+                        fs.writeFile(videoTitle+"."+ext, body, "binary", function(err) {
                             if (!err) {
                                 console.log("video downloaded");
                             } else {
